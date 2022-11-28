@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>GizanTech</title>
+    <meta charset="utf-8" />
+    <meta name='viewport' content='width=device-width,maximum-scale=1.0' />
+    <style>
+      HTML {
+        background: #ddd
+      }
+
+      BODY {
+        font-family: Verdana, Geneva, sans-serif;
+        font-size: 14px;
+        line-height: 18px;
+        margin: 10px 20px 20px 10px;
+        background: #fff;
+        padding: 5px 15px 10px 15px;
+        border-radius: 25px
+      }
+
+      IMG {
+        border: 0
+      }
+
+      .faded {
+        color: #999
+      }
+
+      #pic {
+        float: right;
+        margin-top: 10px;
+        max-width: 261px;
+        min-width: 150px;
+        width: 34%;
+        height: auto
+      }
+
+      H1 {
+        margin: 14px 0 15px;
+        line-height: 28px;
+        font-size: 28px;
+        color: brown
+      }
+
+      H2 {
+        color: brown;
+        font-size: 18px;
+        font-weight: bold
+      }
+
+      .form>DIV {
+        overflow: hidden;
+        margin: 3px 0
+      }
+
+      .form>DIV.gap {
+        margin-top: 13px
+      }
+
+      .form>DIV>LABEL {
+        width: 160px;
+        float: left;
+        font-weight: bold;
+        text-align: right
+      }
+
+      .form>DIV DIV {
+        margin-left: 170px
+      }
+
+      .form INPUT[type=text],
+      .form INPUT[type=submit] {
+        margin: 0
+      }
+
+      .form INPUT[type=checkbox] {
+        margin: 3px 3px 0 0
+      }
+
+      .form INPUT:invalid {
+        color: red;
+        box-shadow: none
+      }
+
+      .form INPUT[type=text]:focus {
+        background-color: #eee
+      }
+
+      .form INPUT[type=submit] {
+        font-weight: bold
+      }
+
+      .form SELECT {
+        margin: 0
+      }
+
+      :checked+SPAN {
+        font-weight: bold;
+        color: green
+      }
+
+      #gear {
+        vertical-align: middle;
+        margin: -7px 10px;
+        display: none
+      }
+
+      #gear.turn {
+        display: inline-block;
+        animation: rotation 1.5s linear infinite
+      }
+
+      @keyframes rotation {
+        from {
+          transform: rotate(0deg)
+        }
+
+        to {
+          transform: rotate(359deg)
+        }
+      }
+
+      A:hover {
+        color: #d11
+      }
+
+      @media only screen and (max-width:640px) {
+        .form>DIV>LABEL {
+          float: none;
+          padding-bottom: 1px
+        }
+
+        .form>DIV DIV {
+          margin-left: 0
+        }
+      }
+
+      @media only screen and (max-width:480px) {
+        HTML {
+          background: #fff
+        }
+
+        BODY {
+          margin: 0;
+          padding: 0 8px;
+          border-radius: 0
+        }
+
+        H1 {
+          margin: 10px 0 10px
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <center>
+      <h1 style="color: green">Juice Maker</h1>
+      <br>
+      <form>
+        <input type="button" value="Drink 01" onclick="drink1(1)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 02" onclick="drink1(2)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 03" onclick="drink1(3)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 04" onclick="drink1(4)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 05" onclick="drink1(5)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 06" onclick="drink1(6)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 07" onclick="drink1(7)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 08" onclick="drink1(8)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 09" onclick="drink1(9)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 10" onclick="drink1(10)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 11" onclick="drink1(11)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 12" onclick="drink1(12)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 13" onclick="drink1(13)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 14" onclick="drink1(14)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 15" onclick="drink1(15)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 16" onclick="drink1(16)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 17" onclick="drink1(17)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 18" onclick="drink1(18)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 19" onclick="drink1(19)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 20" onclick="drink1(20)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 21" onclick="drink1(21)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 22" onclick="drink1(22)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 23" onclick="drink1(23)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 24" onclick="drink1(24)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 25" onclick="drink1(25)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 26" onclick="drink1(26)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 27" onclick="drink1(27)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 28" onclick="drink1(28)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 29" onclick="drink1(29)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 30" onclick="drink1(30)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 31" onclick="drink1(31)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 32" onclick="drink1(32)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 33" onclick="drink1(33)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 34" onclick="drink1(34)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 35" onclick="drink1(35)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 36" onclick="drink1(36)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 37" onclick="drink1(37)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 38" onclick="drink1(38)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 39" onclick="drink1(39)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 40" onclick="drink1(40)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 41" onclick="drink1(41)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 42" onclick="drink1(42)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 43" onclick="drink1(43)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 44" onclick="drink1(44)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 45" onclick="drink1(45)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 46" onclick="drink1(46)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 47" onclick="drink1(47)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 48" onclick="drink1(48)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <hr>
+        <input type="button" value="Drink 49" onclick="drink1(49)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+        <input type="button" value="Drink 50" onclick="drink1(50)" style="background-color: turquoise; border: none; border-radius: 5px; color: #333; /* Dark grey */ padding: 15px 32px; font-weight: bold">
+      </form>
+    </center>
+    <hr>
+    <h2>Flash new firmware over WiFi</h2>
+    <p style='color:red'>
+      <b>WARNING!</b> Replacement firmware (sketch) <code>.bin</code> files must be compiled for this board, else it <u>may not boot</u>. Flash using a serial cable to fix.
+    <p>
+    <form method='post' action='/update' enctype='multipart/form-data'>
+      <input type='file' accept=".bin,.bin.gz" name='firmware' onchange='this.form.flash.disabled=false;this.form.flash.style.fontWeight="bold"' />
+      <input type='submit' name='flash' value='Upload Sketch' disabled />
+    </form>
+    <form method='post' action='/update' enctype='multipart/form-data'>
+      <input type='file' accept=".bin,.bin.gz" name='filesystem' onchange='this.form.flash.disabled=false;this.form.flash.style.fontWeight="bold"' />
+      <input type='submit' name='flash' value='Sketch Data' disabled />
+    </form>
+    <script>
+    var drinkNum = 0;
+      function drink1(num) {
+      
+      drinkNum = this.num;
+      
+      	submitForm();
+        
+        alert("Making the Drink-" + num);
+        
+      }
+
+      function displayRange(val, id) {
+        document.getElementById(id).value = val;
+      }
+
+      function displaySteps(val, id) {
+        document.getElementById(id).value = val == 1 ? 'full' : '1/' + Math.pow(2, val - 1);
+      }
+      // Motor #1 and/or motor #2 selected
+      function displayMotor(el) {
+        var elements = document.getElementsByClassName(el.name);
+        for (var i = 0, il = elements.length; i < il; i++) {
+          if (el.checked) elements[i].style.display = '';
+          else elements[i].style.display = 'none';
+        }
+      }
+      var httpRequest;
+
+      function alertContents() {
+        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+          if (httpRequest.status != 200) alert('There was a problem with the request.');
+          f.run.disabled = false;
+          f.style.cursor = '';
+          document.getElementById('gear').className = '';
+        }
+      }
+
+      function submitForm2(num) {
+        httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = alertContents;
+        var uri = '/motors';  
+        uri += '&drink=' + num;
+        
+        httpRequest.open('GET', uri);
+        httpRequest.send();
+        return false;
+      }
+      
+      function submitForm() {
+          f.run.disabled = false;
+          f.style.cursor = '';
+          document.getElementById('gear').className = '';
+          httpRequest = new XMLHttpRequest();
+          httpRequest.onreadystatechange = alertContents;
+          var uri = '/motors';
+          uri += '?motor1=' + (f.motor1.checked ? 1 : 0);
+          uri += '&speed1=' + f.speed1.value;
+          uri += '&step1=' + f.step1.value;
+          uri += '&dirn1=' + f.dirn1.value;
+          uri += '&limit1=' + f.limit1.value;
+          uri += '&motor2=' + (f.motor2.checked ? 1 : 0);
+          uri += '&speed2=' + f.speed2.value;
+          uri += '&step2=' + f.step2.value;
+          uri += '&dirn2=' + f.dirn2.value;
+          uri += '&limit2=' + f.limit2.value;
+          uri += '&time=' + f.time.value;
+          uri += '&drink=' + drinkNum;
+          httpRequest.open('GET', uri);
+          httpRequest.send();
+          return false;
+        }
+        
+      var f = document.esp;
+      displayRange(f.speed1.value, 'usec1');
+      displayRange(f.speed2.value, 'usec2');
+      displaySteps(f.step1.value, 'ustep1');
+      displaySteps(f.step2.value, 'ustep2');
+      displayMotor(f.motor1);
+      displayMotor(f.motor2);
+    </script>
+  </body>
+</html>

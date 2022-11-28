@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head><title>Stepper motors over WiFi</title>
+<meta charset="utf-8" /> 
+<meta name='viewport' content='width=device-width,maximum-scale=1.0' />
+<style>
+HTML{background:#ddd}
+BODY{font-family:Verdana,Geneva,sans-serif;font-size:14px;line-height:18px;margin:10px 20px 20px 10px;background:#fff;padding:5px 15px 10px 15px;border-radius:25px}
+IMG{border:0}
+.faded{color:#999}
+#pic{float:right;margin-top:10px;max-width:261px;min-width:150px;width:34%;height:auto}
+H1{margin:14px 0 15px;line-height:28px;font-size:28px;color:brown}
+H2{color:brown;font-size:18px;font-weight:bold}
+.form>DIV{overflow:hidden;margin:3px 0}
+.form>DIV.gap{margin-top:13px}
+.form>DIV>LABEL{width:160px;float:left;font-weight:bold;text-align:right}
+.form>DIV DIV{margin-left:170px}
+.form INPUT[type=text],.form INPUT[type=submit]{margin:0}
+.form INPUT[type=checkbox]{margin:3px 3px 0 0}
+.form INPUT:invalid{color:red;box-shadow:none}
+.form INPUT[type=text]:focus{background-color:#eee}
+.form INPUT[type=submit]{font-weight:bold}
+.form SELECT{margin:0}
+:checked+SPAN{font-weight:bold;color:green}
+#gear{vertical-align:middle;margin:-7px 10px;display:none}
+#gear.turn{display:inline-block;animation:rotation 1.5s linear infinite}
+@keyframes rotation{from{transform:rotate(0deg)}to{transform:rotate(359deg)}}
+A:hover{color:#d11}
+@media only screen and (max-width:640px){
+.form>DIV>LABEL{float:none;padding-bottom:1px}
+.form>DIV DIV{margin-left:0}
+}
+@media only screen and (max-width:480px){
+HTML{background:#fff}
+BODY{margin:0;padding:0 8px;border-radius:0}
+H1{margin:10px 0 10px}
+}
+</style>
+</head>
+<body>
+<img src='gears.png' id='pic' alt='gears pic'>
+<h1>Stepper motors over WiFi</h1>
+<p>
+<form method='post' action='#' name='esp' class='form' onsubmit="return submitForm()">
+<h2><label><input type='checkbox' name='motor1' value='1' onchange="displayMotor(this)" checked /><span>Motor #1 enabled?</span></label></h2>
+<div class='motor1'><label>Speed</label><div><input type="range" min="200" max="5000" value="400" step="200" id="speed1" oninput="displayRange(value,'usec1')"> <output for="speed1" id="usec1"></output> steps/sec</div></div>
+<div class='gap motor1'><label>Microsteps</label><div><input type="range" min="1" max="5" value="1" id="step1" oninput="displaySteps(value,'ustep1')" /> <output for="step1" id="ustep1"></output></div></div>
+<div class='gap motor1'><label>Direction</label><div><label><input type='radio' name='dirn1' value='0' checked /><span>Forward</span></label> &nbsp;&nbsp; <label><input type='radio' name='dirn1' value='1' /><span>Reverse</span></label></div></div>
+<div class='gap motor1'><label>Limit switch</label><div><label><input type='radio' name='limit1' value='1' /><span>Stop motor if pressed</span></label><br /><label><input type='radio' name='limit1' value='0' checked /><span>Ignore switch / <i>not connected</i></span></label></div></div>
+<h2><label><input type='checkbox' name='motor2' value='1' onchange="displayMotor(this)" checked /><span>Motor #2 enabled?</span></label></h2>
+<div class='motor2'><label>Speed</label><div><input type="range" min="200" max="5000" value="400" step="200" id="speed2" oninput="displayRange(value,'usec2')"> <output for="speed2" id="usec2"></output> steps/sec</div></div>
+<div class='gap motor2'><label>Microsteps</label><div><input type="range" min="1" max="5" value="1" id="step2" oninput="displaySteps(value,'ustep2')" /> <output for="step2" id="ustep2"></output></div></div>
+<div class='gap motor2'><label>Direction</label><div><label><input type='radio' name='dirn2' value='0' /><span>Forward</span></label> &nbsp;&nbsp; <label><input type='radio' name='dirn2' value='1' checked /><span>Reverse</span></label></div></div>
+<div class='gap motor2'><label>Limit switch</label><div><label><input type='radio' name='limit2' value='1' /><span>Stop motor if pressed</span></label><br /><label><input type='radio' name='limit2' value='0' checked /><span>Ignore switch / <i>not connected</i></span></label></div></div>
+<p>
+<span>Click to run the motor(s) for <input type='text' name='time' value='5.0' size='4' maxlength='5' pattern="[0-9.]*" required /> seconds:</span>
+<p>
+<input type='submit' name='run' value='Run Motor(s)' /> <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAS1BMVEUAAACfn5/+/v67u7vl5eXV1dXS0tK3t7e1tbWxsbGoqKihoaHx8fHs7Ozp6ena2trPz8/Kysq/v7+urq6srKylpaX4+Pjf39/GxsYRESSUAAAAAXRSTlMAQObYZgAAALxJREFUOMuNktkWwiAMRJMWhJZudlH//0sVo5DTQHSesty2UwY4yfkHaGoRUQXwpaay+QJUrXjn60ucjzDgWzaBWViQ40CPUsKdCjRyv5f21HlqevFyU/ggbwxkMaAtmhrxow3gpv1VoKYABOSxSIAOv4U6MMdRl2gJdHF0UK2Z5DG5YjY7lfX4h1hLYj3PrtRNUHOVD3yx278XxgDX8etGoQ6QSZ/u3WylSUrOpIhoL5UfnKAOaFoCZZz1BCcHBAQVQKxAAAAAAElFTkSuQmCC' width='32' height='32' alt='turning...' id='gear'>
+</form>
+<p>
+Connect to the Internet, then visit <a href='https://climbers.net/sbc/esp-wifi-stepper-motors-controller-revb/' style='word-break:break-all' target='_blank'><code>climbers.net/sbc/esp-wifi-stepper-motors-controller-revb</code></a> for full documentation.
+<p>
+<hr>
+<h2>Flash new firmware over WiFi</h2>
+<p style='color:red'>
+<b>WARNING!</b> Replacement firmware (sketch) <code>.bin</code> files must be compiled for this board, else it <u>may not boot</u>. Flash using a serial cable to fix.
+<p>
+<form method='post' action='/update' enctype='multipart/form-data'><input type='file' accept=".bin,.bin.gz" name='firmware' onchange='this.form.flash.disabled=false;this.form.flash.style.fontWeight="bold"' /><input type='submit' name='flash' value='Upload Sketch' disabled /></form>
+<form method='post' action='/update' enctype='multipart/form-data'><input type='file' accept=".bin,.bin.gz" name='filesystem' onchange='this.form.flash.disabled=false;this.form.flash.style.fontWeight="bold"' /><input type='submit' name='flash' value='Sketch Data' disabled /></form>
+
+<p class='faded'>
+v1.2 &ndash; Copyright &copy; Climbers.net, 2020-2022
+<script>
+function displayRange(val,id) {
+	document.getElementById(id).value = val;
+}
+function displaySteps(val,id) {
+	document.getElementById(id).value = val == 1 ? 'full' : '1/'+Math.pow(2,val-1);
+}
+// Motor #1 and/or motor #2 selected
+function displayMotor(el) {
+  var elements = document.getElementsByClassName(el.name);
+  for (var i = 0, il = elements.length; i < il; i++) {
+    if (el.checked) elements[i].style.display = '';
+      else elements[i].style.display = 'none';
+  }
+}
+var httpRequest;
+function alertContents() {
+  if (httpRequest.readyState === XMLHttpRequest.DONE) {
+    if (httpRequest.status != 200) alert('There was a problem with the request.');
+    f.run.disabled = false;
+    f.style.cursor = '';
+    document.getElementById('gear').className = '';
+  }
+}
+function submitForm() {
+  f.run.disabled = true;
+  f.style.cursor = 'wait';
+  document.getElementById('gear').className = 'turn';
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = alertContents;
+  var uri = '/motors';
+  uri += '?motor1='+(f.motor1.checked ? 1 : 0);
+  uri += '&speed1='+f.speed1.value;
+  uri += '&step1='+f.step1.value;
+  uri += '&dirn1='+f.dirn1.value;
+  uri += '&limit1='+f.limit1.value;
+  uri += '&motor2='+(f.motor2.checked ? 1 : 0);
+  uri += '&speed2='+f.speed2.value;
+  uri += '&step2='+f.step2.value;
+  uri += '&dirn2='+f.dirn2.value;
+  uri += '&limit2='+f.limit2.value;
+  uri += '&time='+f.time.value;
+  httpRequest.open('GET', uri);
+  httpRequest.send();
+  return false;
+}
+var f=document.esp;
+displayRange(f.speed1.value,'usec1');
+displayRange(f.speed2.value,'usec2');
+displaySteps(f.step1.value,'ustep1');
+displaySteps(f.step2.value,'ustep2');
+displayMotor(f.motor1);
+displayMotor(f.motor2);
+</script>
+</body>
+</html>
