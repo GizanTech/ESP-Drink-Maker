@@ -1,45 +1,17 @@
 #include "ESPmotorsB.h"
 #include "AccelStepper.h"
-#include <Servo.h>
-
-//Uncomment any of the following to make that corresponding Motor work
-//#define stepMotor
-//#define servMotor
-#define lineMotor
 
 #define Motor1 0
 #define Motor2 1
-#define motorInterfaceType 1
 
 //Pin defining
-#ifdef stepMotor
 #define motor2EnPin 5
-#define motor2StepPin 0
-#define motor2DirPin 4
-
-#define motor2_max_speed 1500.0 //steps/seconds
-#define motor2_acceleration 300.0
-#define motor2_initial_speed 500.0 // start speed
-AccelStepper stepper2(motorInterfaceType, motor2StepPin, motor2DirPin);
-
-#elifdef lineMotor
-#define lineMotorEN  4 //Enable goes to GPIO 4
-#define lineMotorIN1 0 //Enable goes to GPIO 0
-#define lineMotorIN2 2 //Enable goes to GPIO 2
-#define lineMotorTime 5000 //5 seconds for vertical movement in one direction 
-
-#elifdef servMotor
-
-#define servMotorPin 2
-#define holdAngle 90
-#define releaseAngle 0
-#define holdTime 5000
-Servo servo;
-
-#endif
-
-#define motor1DirPin 15
 #define motor1EnPin 16
+
+#define motor2DirPin 4
+#define motor1DirPin 15
+
+#define motor2StepPin 0
 #define motor1StepPin 13
 
 //Switches
@@ -47,13 +19,19 @@ Servo servo;
 #define limit_switch2 12   // This is GPIO 12 on ESP - D6
 #define stop_switch 2
 
-#define motor1_max_speed 1100.0 //steps/seconds
-#define motor1_acceleration 300.0
-#define motor1_initial_speed 400.0 // start speed
+#define motor1_max_speed 1500.0 //steps/seconds
+#define motor2_max_speed 1500.0 //steps/seconds
 
+#define motor1_acceleration 300.0
+#define motor2_acceleration 300.0
+
+#define motor1_initial_speed 500.0 // start speed
+#define motor2_initial_speed 500.0 // start speed
+
+#define motorInterfaceType 1
 
 AccelStepper stepper1(motorInterfaceType, motor1StepPin, motor1DirPin);
-
+AccelStepper stepper2(motorInterfaceType, motor2StepPin, motor2DirPin);
 
 int motor1_limit = 0; //Ignore limit switch. To use limit switch, make the value 1.
 int motor2_limit = 0; //Ignore limit switch. To use limit switch, make the value 1.
@@ -74,9 +52,9 @@ long drink_combination[number_of_drinks + 1][20] = {
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // ignore this drink
   { 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},      // drink-1 combination with bottle number
   { 1, 2, 1, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},         // drink-2 combination with bottle number
-  { 1, 18, 2, 17, 10, 3, 18, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // drink-3 combination with bottle number
-  { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, -1, -1}, // drink-4 combination
-  { 1, 20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+  { 1, 2, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // drink-3 combination with bottle number
+  { 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1},
+  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -99,9 +77,9 @@ long drink_hold_time[number_of_drinks + 1][20] = {
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // ignore this drink
   { 4, 4, 4, 4, 4, 8, 4, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},       // drink-1 Stirring has 4 seconds and dispense has 10 seconds
   { 4, 4, 4, 4, 4, 4, -1, -1, -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, -1},         // drink-2 combination with bottle holding time
-  { 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // drink-3 combination with bottle holding time
-  { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -1, -1}, // drink-4 combination
-  { 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // drink-3 combination with bottle holding time
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -119,6 +97,8 @@ long drink_hold_time[number_of_drinks + 1][20] = {
   { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
+
+
 long current_position = 0;
 
 void setup() {
@@ -130,29 +110,18 @@ void setup() {
   pinMode(stop_switch, INPUT_PULLUP);
 
   pinMode(motor1EnPin, OUTPUT);
+  pinMode(motor2EnPin, OUTPUT);
 
   digitalWrite(motor1EnPin, HIGH);
+  digitalWrite(motor2EnPin, HIGH);
 
   stepper1.setMaxSpeed(motor1_max_speed);
   stepper1.setAcceleration(motor1_acceleration);
   stepper1.setSpeed(motor1_initial_speed);
 
-#ifdef stepMotor`
-  pinMode(motor2EnPin, OUTPUT);
-  digitalWrite(motor2EnPin, HIGH);
-
   stepper2.setMaxSpeed(motor2_max_speed);
   stepper2.setAcceleration(motor2_acceleration);
   stepper2.setSpeed(motor2_initial_speed);
-#elifdef lineMotor
-  pinMode(lineMotorEN, OUTPUT);
-  pinMode(lineMotorIN1, OUTPUT);
-  pinMode(lineMotorIN2, OUTPUT);
-  
-#elifdef servMotor
-  servo.attach(servMotorPin);
-  servo.write(releaseAngle);
-#endif
 
   // This is to test directly after pushing code automatically without wifi
   test();
@@ -265,16 +234,15 @@ void runMotor(long motorNo, long totSteps) {
     digitalWrite(motor1EnPin, HIGH);
   }
   else if (motorNo == Motor2) {
-
-
-#ifdef stepMotor
     digitalWrite(motor2EnPin, LOW);
     stepper2.move(totSteps);
     while (stepper2.distanceToGo() != 0) {
+
       // This is to break the loop if stop switch is pressed.
-      if (digitalRead(limit_switch2) == LOW && current_position == 0) {
+      if (digitalRead(limit_switch2) == LOW) {
         break;
       }
+      
       //Stop Switch code
       if (digitalRead(stop_switch) == LOW) {
         stop_time_start = millis();
@@ -285,62 +253,21 @@ void runMotor(long motorNo, long totSteps) {
         stepper2.stop();
         break;
       }
+
       stepper2.run();
       yield();
     }
     digitalWrite(motor2EnPin, HIGH);
-
-#elifdef lineMotor
-    digitalWrite(lineMotorEN, HIGH);
-    if (totSteps < 0) {
-      digitalWrite(lineMotorIN1, HIGH);
-      digitalWrite(lineMotorIN2, LOW);
-    }
-    else {
-      digitalWrite(lineMotorIN1, LOW);
-      digitalWrite(lineMotorIN2, HIGH);
-    }
-    uint32_t lineMotorCurr = millis();
-    while (millis() - lineMotorCurr < lineMotorTime) {
-      // This is to break the loop if stop switch is pressed.
-      if (digitalRead(limit_switch2) == LOW && current_position == 0) {
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      //Stop Switch code
-      if (digitalRead(stop_switch) == LOW) {
-        stop_time_start = millis();
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      else if (millis() - stop_time_start < stop_time) {
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      yield();
-    }
-    digitalWrite(lineMotorEN, LOW);
-
-#elifdef servMotor
-    if (totSteps < 0) {
-      servo.write(releaseAngle);
-    }
-    else {
-      servo.write(holdAngle);
-    }
-
-#endif
-
   }
 }
 
 // This is for tesing the motor
 
 void test() {
-  runMotor(Motor1, -1000);
+  runMotor(Motor1, 1000);
   Serial.println("Motor 1 forward rotation finished!!");
 
-  runMotor(Motor1, +1000);
+  runMotor(Motor1, -1000);
   Serial.println("Motor 1 backword rotation finished!!");
 
   runMotor(Motor2, -100 );
@@ -354,75 +281,75 @@ void declare_variables() {
   long bottle_num;
 
   bottle_num = 1;
-  bottle_distance[bottle_num] = -1888; //0 mm
-  bottle_height[bottle_num] = -169; //mm ISSUES
+  bottle_distance[bottle_num] = 0; //mm
+  bottle_height[bottle_num] = -167; //mm ISSUES
 
   bottle_num = 2;
-  bottle_distance[bottle_num] = -1790 ; //mm
-  bottle_height[bottle_num] = -164; //mm
+  bottle_distance[bottle_num] = 99 ; //mm
+  bottle_height[bottle_num] = -162; //mm
 
   bottle_num = 3;
-  bottle_distance[bottle_num] = -1691; //mm
-  bottle_height[bottle_num] = -164; //mm
+  bottle_distance[bottle_num] = 197; //mm
+  bottle_height[bottle_num] = -163; //mm
 
   bottle_num = 4;
-  bottle_distance[bottle_num] = -1588; //   300 mm
-  bottle_height[bottle_num] = -163; //mm  ISSUES
+  bottle_distance[bottle_num] = 300; //mm
+  bottle_height[bottle_num] = -161; //mm  ISSUES
 
   bottle_num = 5;
-  bottle_distance[bottle_num] = -1495; //mm
-  bottle_height[bottle_num] = -162; //mm ISSUES
+  bottle_distance[bottle_num] = 395; //mm
+  bottle_height[bottle_num] = -160; //mm ISSUES
 
   bottle_num = 6;
-  bottle_distance[bottle_num] = -1392; //mm
-  bottle_height[bottle_num] = -157; //mm
+  bottle_distance[bottle_num] = 496; //mm
+  bottle_height[bottle_num] = -155; //mm
 
   bottle_num = 7;
-  bottle_distance[bottle_num] = -1294; //mm
+  bottle_distance[bottle_num] = 597; //mm
   bottle_height[bottle_num] = -155; //mm ISSUES
 
   bottle_num = 8;
-  bottle_distance[bottle_num] = -1190; //mm
-  bottle_height[bottle_num] = -156; //mm
+  bottle_distance[bottle_num] = 697; //mm
+  bottle_height[bottle_num] = -154; //mm
 
   bottle_num = 9;
-  bottle_distance[bottle_num] = -1095; // 793 mm
-  bottle_height[bottle_num] = -156; //mm
+  bottle_distance[bottle_num] = 791; //mm
+  bottle_height[bottle_num] = -155.5; //mm
 
   bottle_num = 10;
-  bottle_distance[bottle_num] = -995; //893 mm
-  bottle_height[bottle_num] = -156; //mm
+  bottle_distance[bottle_num] = 892; //mm
+  bottle_height[bottle_num] = -155; //mm
 
   bottle_num = 11;
-  bottle_distance[bottle_num] = -896; // 992 mm
+  bottle_distance[bottle_num] = 993; //mm
   bottle_height[bottle_num] = -157; //mm
 
   bottle_num = 12;
-  bottle_distance[bottle_num] = -793; // 1095 mm
-  bottle_height[bottle_num] = -158; //mm
+  bottle_distance[bottle_num] = 1093; //mm
+  bottle_height[bottle_num] = -156; //mm
 
   bottle_num = 13;
-  bottle_distance[bottle_num] = -699; // 1189 mm
+  bottle_distance[bottle_num] = 1188; //mm
   bottle_height[bottle_num] = -136; //mm
 
   bottle_num = 14;
-  bottle_distance[bottle_num] = -599; // 1289 mm
+  bottle_distance[bottle_num] = 1289; //mm
   bottle_height[bottle_num] = -137; //mm
 
   bottle_num = 15;
-  bottle_distance[bottle_num] = -502; //mm
+  bottle_distance[bottle_num] = 1389; //mm
   bottle_height[bottle_num] = -135; //mm
 
   bottle_num = 16;
-  bottle_distance[bottle_num] = -400; //1488 mm
-  bottle_height[bottle_num] = -136; //mm
+  bottle_distance[bottle_num] = 1488; //mm
+  bottle_height[bottle_num] = -135; //mm
 
   bottle_num = 17;
-  bottle_distance[bottle_num] = -297; //mm
+  bottle_distance[bottle_num] = 1589; //mm
   bottle_height[bottle_num] = -136; //mm
 
   bottle_num = 18;
-  bottle_distance[bottle_num] = -201; //1687 mm
+  bottle_distance[bottle_num] = 1689; //mm
   bottle_height[bottle_num] = -137; //mm
 
   bottle_num = 19;
@@ -430,10 +357,10 @@ void declare_variables() {
   bottle_height[bottle_num] = -32; //mm
 
   bottle_num = 20;
-  bottle_distance[bottle_num] = 0; //1888 mm
+  bottle_distance[bottle_num] = 1873; //mm
   bottle_height[bottle_num] = -32; //mm
 
   bottle_num = 21;
-  bottle_distance[bottle_num] = 0; //1888 mm
+  bottle_distance[bottle_num] = 1873; //mm
   bottle_height[bottle_num] = +50; //mm
 }

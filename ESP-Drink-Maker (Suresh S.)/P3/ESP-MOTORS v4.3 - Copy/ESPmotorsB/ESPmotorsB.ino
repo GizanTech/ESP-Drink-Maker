@@ -1,45 +1,22 @@
 #include "ESPmotorsB.h"
 #include "AccelStepper.h"
-#include <Servo.h>
 
-//Uncomment any of the following to make that corresponding Motor work
-//#define stepMotor
-//#define servMotor
-#define lineMotor
+#define lineMotorEN  2 //Enable goes to GPIO 4
+#define lineMotorIN1 5 //Enable goes to GPIO 0
+#define lineMotorIN2 16 //Enable goes to GPIO 2
+#define lineMotorTime 5000 //5 seconds for vertical movement in one direction 
 
 #define Motor1 0
 #define Motor2 1
-#define motorInterfaceType 1
 
 //Pin defining
-#ifdef stepMotor
 #define motor2EnPin 5
-#define motor2StepPin 0
-#define motor2DirPin 4
-
-#define motor2_max_speed 1500.0 //steps/seconds
-#define motor2_acceleration 300.0
-#define motor2_initial_speed 500.0 // start speed
-AccelStepper stepper2(motorInterfaceType, motor2StepPin, motor2DirPin);
-
-#elifdef lineMotor
-#define lineMotorEN  4 //Enable goes to GPIO 4
-#define lineMotorIN1 0 //Enable goes to GPIO 0
-#define lineMotorIN2 2 //Enable goes to GPIO 2
-#define lineMotorTime 5000 //5 seconds for vertical movement in one direction 
-
-#elifdef servMotor
-
-#define servMotorPin 2
-#define holdAngle 90
-#define releaseAngle 0
-#define holdTime 5000
-Servo servo;
-
-#endif
-
-#define motor1DirPin 15
 #define motor1EnPin 16
+
+#define motor2DirPin 4
+#define motor1DirPin 15
+
+#define motor2StepPin 0
 #define motor1StepPin 13
 
 //Switches
@@ -47,13 +24,19 @@ Servo servo;
 #define limit_switch2 12   // This is GPIO 12 on ESP - D6
 #define stop_switch 2
 
-#define motor1_max_speed 1100.0 //steps/seconds
-#define motor1_acceleration 300.0
-#define motor1_initial_speed 400.0 // start speed
+#define motor1_max_speed 1500.0 //steps/seconds
+#define motor2_max_speed 1500.0 //steps/seconds
 
+#define motor1_acceleration 300.0
+#define motor2_acceleration 300.0
+
+#define motor1_initial_speed 500.0 // start speed
+#define motor2_initial_speed 500.0 // start speed
+
+#define motorInterfaceType 1
 
 AccelStepper stepper1(motorInterfaceType, motor1StepPin, motor1DirPin);
-
+AccelStepper stepper2(motorInterfaceType, motor2StepPin, motor2DirPin);
 
 int motor1_limit = 0; //Ignore limit switch. To use limit switch, make the value 1.
 int motor2_limit = 0; //Ignore limit switch. To use limit switch, make the value 1.
@@ -137,23 +120,10 @@ void setup() {
   stepper1.setAcceleration(motor1_acceleration);
   stepper1.setSpeed(motor1_initial_speed);
 
-#ifdef stepMotor`
-  pinMode(motor2EnPin, OUTPUT);
-  digitalWrite(motor2EnPin, HIGH);
-
-  stepper2.setMaxSpeed(motor2_max_speed);
-  stepper2.setAcceleration(motor2_acceleration);
-  stepper2.setSpeed(motor2_initial_speed);
-#elifdef lineMotor
   pinMode(lineMotorEN, OUTPUT);
   pinMode(lineMotorIN1, OUTPUT);
   pinMode(lineMotorIN2, OUTPUT);
   
-#elifdef servMotor
-  servo.attach(servMotorPin);
-  servo.write(releaseAngle);
-#endif
-
   // This is to test directly after pushing code automatically without wifi
   test();
 }
@@ -265,32 +235,7 @@ void runMotor(long motorNo, long totSteps) {
     digitalWrite(motor1EnPin, HIGH);
   }
   else if (motorNo == Motor2) {
-
-
-#ifdef stepMotor
-    digitalWrite(motor2EnPin, LOW);
-    stepper2.move(totSteps);
-    while (stepper2.distanceToGo() != 0) {
-      // This is to break the loop if stop switch is pressed.
-      if (digitalRead(limit_switch2) == LOW && current_position == 0) {
-        break;
-      }
-      //Stop Switch code
-      if (digitalRead(stop_switch) == LOW) {
-        stop_time_start = millis();
-        stepper2.stop();
-        break;
-      }
-      else if (millis() - stop_time_start < stop_time) {
-        stepper2.stop();
-        break;
-      }
-      stepper2.run();
-      yield();
-    }
-    digitalWrite(motor2EnPin, HIGH);
-
-#elifdef lineMotor
+    Serial.println("Running Linear actuator");
     digitalWrite(lineMotorEN, HIGH);
     if (totSteps < 0) {
       digitalWrite(lineMotorIN1, HIGH);
@@ -300,37 +245,8 @@ void runMotor(long motorNo, long totSteps) {
       digitalWrite(lineMotorIN1, LOW);
       digitalWrite(lineMotorIN2, HIGH);
     }
-    uint32_t lineMotorCurr = millis();
-    while (millis() - lineMotorCurr < lineMotorTime) {
-      // This is to break the loop if stop switch is pressed.
-      if (digitalRead(limit_switch2) == LOW && current_position == 0) {
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      //Stop Switch code
-      if (digitalRead(stop_switch) == LOW) {
-        stop_time_start = millis();
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      else if (millis() - stop_time_start < stop_time) {
-        digitalWrite(lineMotorEN, LOW);
-        break;
-      }
-      yield();
-    }
+    delay(lineMotorTime*abs(totSteps));
     digitalWrite(lineMotorEN, LOW);
-
-#elifdef servMotor
-    if (totSteps < 0) {
-      servo.write(releaseAngle);
-    }
-    else {
-      servo.write(holdAngle);
-    }
-
-#endif
-
   }
 }
 
