@@ -2,10 +2,7 @@
 #include "AccelStepper.h"
 #include <Servo.h>
 
-//Uncomment any of the following to make that corresponding Motor work
-//#define stepMotor
-//#define servMotor
-#define lineMotor
+#define spdSrv 2 //increase to make servo slow
 
 #define Motor1 0
 #define Motor2 1
@@ -29,9 +26,9 @@ Servo servo;
 #define limit_switch2 12   // This is GPIO 12 on ESP - D6
 #define stop_switch 2
 
-#define motor1_max_speed 1100.0 //steps/seconds
-#define motor1_acceleration 300.0
-#define motor1_initial_speed 400.0 // start speed
+#define motor1_max_speed 1000.0 //steps/seconds
+#define motor1_acceleration 200.0
+#define motor1_initial_speed 500.0 // start speed
 
 
 AccelStepper stepper1(motorInterfaceType, motor1StepPin, motor1DirPin);
@@ -47,6 +44,10 @@ int motor2_limit = 0; //Ignore limit switch. To use limit switch, make the value
 
 long bottle_distance[number_of_bottles + 1];
 long bottle_height[number_of_bottles + 1];
+long bottle_holdAngle[number_of_bottles + 1];
+long bottle_releaseAngle[number_of_bottles + 1];
+
+int currBottle = 0;
 
 uint32_t  stop_time = 2000;
 uint32_t  stop_time_start;
@@ -146,11 +147,14 @@ void getDrink(long drink) {
   //  runMotor(Motor2, steps_needed);
 
   for (long i = 0 ; i < 20; i++) {
-    if (drink_combination[drink][i] == -1) {
+    
+    currBottle = drink_combination[drink][i];
+    
+    if (currBottle == -1) {
       break;
     }
 
-    long destination = bottle_distance[drink_combination[drink][i]];
+    long destination = bottle_distance[currBottle];
     Serial.print("Destination X: "); Serial.println(destination);
     long distance = destination - current_position;
     float steps_needed = distance * 1.0 / oneStepDistance;
@@ -159,14 +163,15 @@ void getDrink(long drink) {
 
     runMotor(Motor1, steps_needed);
     delay(500);
-
-    destination = bottle_height[drink_combination[drink][i]];
+    
+    destination = bottle_height[currBottle];
     distance = destination;
     Serial.print("Destination Y: "); Serial.println(destination);
     steps_needed = distance * 1.0 / oneStepDistance;
     Serial.print("steps_needed Y: "); Serial.println(steps_needed);
 
     runMotor(Motor2, steps_needed);
+    delay(500); // This is to delay the Servo from going up again too quickly
     uint32_t holdingTime = drink_hold_time[drink][i] * 1000;
     Serial.print("Holding Time: ");Serial.println(holdingTime);
     delay(holdingTime);
@@ -234,10 +239,13 @@ void runMotor(long motorNo, long totSteps) {
   else if (motorNo == Motor2) {
 
     if (totSteps < 0) {
-      servo.write(releaseAngle);
+       for(int ang = 0 ; ang < bottle_releaseAngle[currBottle]; ang++){
+        servo.write(ang);
+        delay(spdSrv);
+      }
     }
     else {
-      servo.write(holdAngle);
+      servo.write(bottle_holdAngle[currBottle]); 
     }
   }
 }
@@ -264,84 +272,126 @@ void declare_variables() {
   bottle_num = 1;
   bottle_distance[bottle_num] = -1888; //0 mm
   bottle_height[bottle_num] = -169; //mm ISSUES
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 2;
   bottle_distance[bottle_num] = -1790 ; //mm
   bottle_height[bottle_num] = -164; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 3;
   bottle_distance[bottle_num] = -1691; //mm
   bottle_height[bottle_num] = -164; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 4;
   bottle_distance[bottle_num] = -1588; //   300 mm
   bottle_height[bottle_num] = -163; //mm  ISSUES
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 5;
   bottle_distance[bottle_num] = -1495; //mm
   bottle_height[bottle_num] = -162; //mm ISSUES
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 6;
   bottle_distance[bottle_num] = -1392; //mm
   bottle_height[bottle_num] = -157; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 7;
   bottle_distance[bottle_num] = -1294; //mm
   bottle_height[bottle_num] = -155; //mm ISSUES
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 8;
   bottle_distance[bottle_num] = -1190; //mm
   bottle_height[bottle_num] = -156; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 9;
   bottle_distance[bottle_num] = -1095; // 793 mm
   bottle_height[bottle_num] = -156; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 10;
   bottle_distance[bottle_num] = -995; //893 mm
   bottle_height[bottle_num] = -156; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 11;
   bottle_distance[bottle_num] = -896; // 992 mm
   bottle_height[bottle_num] = -157; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 12;
   bottle_distance[bottle_num] = -793; // 1095 mm
   bottle_height[bottle_num] = -158; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 13;
   bottle_distance[bottle_num] = -699; // 1189 mm
   bottle_height[bottle_num] = -136; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 14;
   bottle_distance[bottle_num] = -599; // 1289 mm
   bottle_height[bottle_num] = -137; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 15;
   bottle_distance[bottle_num] = -502; //mm
   bottle_height[bottle_num] = -135; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 16;
   bottle_distance[bottle_num] = -400; //1488 mm
   bottle_height[bottle_num] = -136; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 17;
   bottle_distance[bottle_num] = -297; //mm
   bottle_height[bottle_num] = -136; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 18;
   bottle_distance[bottle_num] = -201; //1687 mm
   bottle_height[bottle_num] = -137; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 19;
   bottle_distance[bottle_num] = 1787; //mm
   bottle_height[bottle_num] = -32; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 20;
   bottle_distance[bottle_num] = 0; //1888 mm
   bottle_height[bottle_num] = -32; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 
   bottle_num = 21;
   bottle_distance[bottle_num] = 0; //1888 mm
   bottle_height[bottle_num] = +50; //mm
+  bottle_holdAngle[bottle_num] = 90;
+  bottle_releaseAngle[bottle_num] = 0;
 }
