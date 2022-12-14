@@ -2,27 +2,21 @@
 #include "AccelStepper.h"
 #include <Servo.h>
 
-//Uncomment any of the following to make that corresponding Motor work
-//#define stepMotor
-//#define servMotor
-#define lineMotor
-
 #define Motor1 0
 #define Motor2 1
 #define motorInterfaceType 1
 
-//Pin defining
+#define motor1DirPin 15
+#define motor1EnPin 16
+#define motor1StepPin 13
 
+//Pin defining
 
 #define servMotorPin 2
 #define holdAngle 170
 #define releaseAngle 10
-#define holdTime 1000
-Servo servo;
 
-#define motor1DirPin 15
-#define motor1EnPin 16
-#define motor1StepPin 13
+Servo servo;
 
 //Switches
 #define limit_switch1 12     // This is GPIO 12 on ESP - D6
@@ -33,9 +27,7 @@ Servo servo;
 #define motor1_acceleration 300.0
 #define motor1_initial_speed 400.0 // start speed
 
-
 AccelStepper stepper1(motorInterfaceType, motor1StepPin, motor1DirPin);
-
 
 int motor1_limit = 1; //Ignore limit switch. To use limit switch, make the value 1.
 int motor2_limit = 0; //Ignore limit switch. To use limit switch, make the value 1.
@@ -122,12 +114,6 @@ void setup() {
   stepper1.setAcceleration(motor1_acceleration);
   stepper1.setSpeed(motor1_initial_speed);
 
-  servo.attach(servMotorPin);
-  servo.write(releaseAngle); //Ideally should be moved before the previous line
-//  servo.detach();  // added by Suresh to reduce vibration
-//  delay(5000);     // added by Suresh to reduce vibration
-
-
   // This is to test directly after pushing code automatically without wifi
   test();
 }
@@ -149,12 +135,12 @@ void getDrink(long drink) {
   // This is where all instructions start for drinks:
   // Add these if we add a dispenser
   // Replace step needed by the exact steps that we want it to go up before start.
-  //  runMotor(Motor2, steps_needed);
+  // runMotor(Motor2, steps_needed);
 
   for (long i = 0 ; i < 20; i++) {
 
     currBottle = drink_combination[drink][i]; //added this line just for the releaseangle - Suresh
-    
+
     if (drink_combination[drink][i] == -1) {
       break;
     }
@@ -177,7 +163,7 @@ void getDrink(long drink) {
 
     runMotor(Motor2, steps_needed);
     uint32_t holdingTime = drink_hold_time[drink][i] * 1000;
-    Serial.print("Holding Time: ");Serial.println(holdingTime);
+    Serial.print("Holding Time: "); Serial.println(holdingTime);
     delay(holdingTime);
 
     steps_needed = -1 * steps_needed;
@@ -195,9 +181,9 @@ void getDrink(long drink) {
   long steps_needed = distance * 1.0 / oneStepDistance;
   current_position = destination;
   //steps_needed = -1 * steps_needed ;
-  
+
   steps_needed = 1 * steps_needed * 1.0005; // add twice the distance if using a limit switch - Suresh
-  
+
   Serial.print("steps_needed X: "); Serial.println(steps_needed);
 
 
@@ -245,11 +231,14 @@ void runMotor(long motorNo, long totSteps) {
   else if (motorNo == Motor2) {
 
     if (totSteps < 0) {
-       // servo.write(releaseAngle); (Working code)
-     servo.write(bottle_releaseAngle[currBottle]); // - Added by Suresh
+      servo.attach(servMotorPin);
+      servo.write(holdAngle); 
+      servo.detach();
     }
     else {
-      servo.write(holdAngle);
+      servo.attach(servMotorPin);
+      servo.write(bottle_releaseAngle[currBottle]); 
+      servo.detach();
     }
   }
 }
@@ -282,7 +271,7 @@ void declare_variables() {
   bottle_distance[bottle_num] = -1764 ; //mm
   bottle_height[bottle_num] = -164; //mm
   bottle_releaseAngle[bottle_num] = 45;
-  
+
   bottle_num = 3;
   bottle_distance[bottle_num] = -1667; //mm
   bottle_height[bottle_num] = -164; //mm

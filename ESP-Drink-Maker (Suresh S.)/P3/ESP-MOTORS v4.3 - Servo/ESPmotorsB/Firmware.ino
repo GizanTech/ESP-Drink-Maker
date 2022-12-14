@@ -1,8 +1,8 @@
-/* 
- * Firmware.ino
- * Firmware Over-The-Air updates for ESPmotors device
- * https://Climbers.net (c) 2018-2022
- */
+/*
+   Firmware.ino
+   Firmware Over-The-Air updates for ESPmotors device
+   https://Climbers.net (c) 2018-2022
+*/
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -24,7 +24,7 @@ void firmware_updateweb() {
       //SPIFFS.info(fs_info);
       size_t fsSize = ((size_t) &_FS_end - (size_t) &_FS_start);
       close_all_fs();
-      if (!Update.begin(fsSize, U_FS)){ // fs_info.totalBytes
+      if (!Update.begin(fsSize, U_FS)) { // fs_info.totalBytes
         Update.printError(Serial);
       }
     } else {
@@ -54,7 +54,7 @@ void firmware_updateota() {
   // Port defaults to 8266
   //ArduinoOTA.setPort(8266);
   // Hostname defaults to esp8266-[ChipID]
-  ArduinoOTA.setHostname((WLAN_SSID + String(ESP.getChipId(),HEX)).c_str());
+  ArduinoOTA.setHostname((WLAN_SSID + String(ESP.getChipId(), HEX)).c_str());
   // No authentication by default
   //ArduinoOTA.setPassword((const char *)"SECRET-WORD");
 
